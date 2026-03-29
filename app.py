@@ -4,22 +4,30 @@ import numpy as np
 from PIL import Image
 
 # Load model
-model = tf.keras.models.load_model("cat_dog_model.h5")
+model = tf.keras.models.load_model("cat_dog_model.keras")
 
 st.title("🐶🐱 Cat vs Dog Classifier")
 
 # Upload image
-uploaded_file = st.file_uploader("Upload an image", type=["jpg","png","jpeg"])
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
     # Read image
     image = Image.open(uploaded_file)
+
+    # 🔥 FIX: convert to RGB (removes alpha channel if present)
+    if image.mode != "RGB":
+        image = image.convert("RGB")
+
     st.image(image, caption="Uploaded Image", use_column_width=True)
 
     # Preprocess
-    img = image.resize((150,150))
+    img = image.resize((150, 150))
     img = np.array(img) / 255.0
     img = np.expand_dims(img, axis=0)
+
+    # Debug (optional)
+    # st.write("Shape:", img.shape)
 
     # Prediction
     pred = model.predict(img)
